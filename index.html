@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Envoys Tutorial</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f4f7fb;color:#10223f}
+button,input{font:inherit}.hidden{display:none!important}
+.auth{min-height:100vh;display:grid;place-items:center;padding:20px}.box{width:min(900px,94vw);background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 20px 65px #061a3620;display:grid;grid-template-columns:42% 58%}
+.left{background:#061a36;color:#fff;padding:45px;display:flex;flex-direction:column;justify-content:center}.cap{font-size:58px}.left h1{font-size:38px;margin:6px 0}.gold{color:#f5bd35;font-weight:900;letter-spacing:1px}.left p{color:#cbd5e1;line-height:1.6}.right{padding:42px}.right h2{margin:0 0 7px;font-size:28px}.sub{color:#718096;margin:0 0 24px}
+.tabs{display:flex;border-bottom:1px solid #dce3ec;margin-bottom:18px}.tabs button{flex:1;background:none;border:0;padding:12px;font-weight:800;color:#718096}.tabs button.active{color:#1769aa;border-bottom:3px solid #f5bd35}
+label{display:block;font-size:13px;font-weight:800;margin:14px 0 6px}input{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:9px}button.primary{width:100%;margin-top:20px;padding:14px;border:0;border-radius:9px;background:#061a36;color:#fff;font-weight:900}button:disabled{opacity:.6}.msg{display:none;margin-top:15px;padding:12px;border-radius:9px;font-size:13px;line-height:1.45}.msg.show{display:block}.ok{background:#e9f8f1;color:#106b4d}.err{background:#fff0f1;color:#a52d38}.config{margin-top:20px;font-size:11px;color:#718096}
+#portal{display:none;min-height:100vh}.layout{display:flex;min-height:100vh}.sidebar{width:245px;background:#061a36;color:#fff;padding:22px 14px;position:fixed;left:0;top:0;bottom:0;display:flex;flex-direction:column}.brand{padding:8px 12px 28px;font-size:20px;font-weight:900}.brand span{color:#f5bd35}.nav{display:flex;flex-direction:column;gap:6px}.nav button{background:none;border:0;color:#cbd5e1;text-align:left;padding:12px 14px;border-radius:10px;font-weight:750;cursor:pointer}.nav button.active,.nav button:hover{background:#ffffff12;color:#fff}.nav button.active{border-left:3px solid #f5bd35}.side-bottom{margin-top:auto;padding:12px}.logout{width:100%;background:#ffffff10;border:1px solid #ffffff22;color:#fff;border-radius:9px;padding:11px}.main{margin-left:245px;width:calc(100% - 245px);padding:28px;max-width:1400px}.top{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:25px}.top h1{margin:0;font-size:28px}.top p{margin:4px 0 0;color:#718096}.avatar{width:44px;height:44px;border-radius:50%;background:#f5bd35;color:#061a36;display:grid;place-items:center;font-weight:900}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.stat{background:#fff;border:1px solid #dce3ec;border-radius:15px;padding:19px}.stat small{color:#718096;font-weight:700}.stat strong{display:block;font-size:26px;margin-top:8px}.grid{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;margin-top:18px}.panel{background:#fff;border:1px solid #dce3ec;border-radius:15px;padding:20px}.panel h3{margin:0 0 15px}.subject{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #edf1f5}.subject:last-child{border-bottom:0}.pill{padding:5px 9px;border-radius:20px;background:#eef5fb;color:#1769aa;font-size:12px;font-weight:800}.empty{text-align:center;padding:28px 10px;color:#718096}.empty b{display:block;color:#10223f;margin-bottom:5px}.cbt-card{border:1px solid #e0e6ed;border-radius:12px;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:12px}.cbt-card button{background:#061a36;color:#fff;border:0;border-radius:8px;padding:9px 13px;font-weight:800}.section{display:none}.section.active{display:block}.mobile-menu{display:none}
+@media(max-width:850px){.sidebar{width:205px}.main{margin-left:205px;width:calc(100% - 205px)}.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}}
+@media(max-width:650px){.box{grid-template-columns:1fr}.left{display:none}.right{padding:30px 23px}.sidebar{position:fixed;transform:translateX(-100%);transition:.2s;width:245px;z-index:5}.sidebar.open{transform:translateX(0)}.main{margin-left:0;width:100%;padding:20px 16px}.mobile-menu{display:block;border:1px solid #dce3ec;background:#fff;border-radius:9px;padding:9px 12px}.top{align-items:flex-start}.stats{grid-template-columns:1fr 1fr}.stat strong{font-size:22px}}
+</style>
+
+<style>
+/* ===== ENVOYS STUDY MATERIALS ===== */
+.materials-panel{margin-top:24px;background:#fff;border:1px solid #dce3ec;border-radius:16px;padding:22px}
+.materials-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.materials-title h3{margin:0}
+.material-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:16px}
+.material-card{border:1px solid #e2e8f0;border-radius:13px;padding:16px}
+.material-icon{font-size:27px}.material-card h4{margin:8px 0 5px}
+.material-meta{font-size:13px;color:#718096}.material-card button{margin-top:12px;border:0;border-radius:8px;padding:9px 13px;font-weight:800;background:#061a36;color:#fff}
+.material-empty{padding:18px 0;color:#718096}
+</style>
+
+</head>
+<body>
+<div class="auth" id="authBox">
+<section class="box">
+<div class="left"><div class="cap">🎓</div><h1>THE ENVOYS</h1><div class="gold">TUTORIAL</div><p>Weekly UTME-style CBTs, results and performance tracking.</p></div>
+<section class="right"><h2>Envoys Tutorial Portal</h2><p class="sub">Your account is the key to your personal dashboard.</p>
+<div class="tabs"><button type="button" id="loginTab" class="active">Log in</button><button type="button" id="signupTab">Create account</button></div>
+<form id="authForm"><div id="nameWrap" class="hidden"><label for="name">Full name</label><input id="name" autocomplete="name" placeholder="Your full name"></div>
+<label for="email">Email address</label><input id="email" type="email" required autocomplete="email" placeholder="you@example.com">
+<label for="password">Password</label><input id="password" type="password" required autocomplete="current-password" placeholder="At least 6 characters">
+<button class="primary" id="submitBtn" type="submit">Log in</button></form>
+<div id="msg" class="msg"></div><div class="config" id="config">Connection: checking…</div>
+</section></section></div>
+
+<div id="portal">
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+<div class="brand">🎓 THE <span>ENVOYS</span></div>
+<nav class="nav">
+<button class="active" data-section="home">🏠 Dashboard</button>
+<button data-section="tutors">👨🏾‍🏫 My Tutors</button>
+<button data-section="cbts">📝 My CBTs</button>
+<button data-section="results">📊 My Results</button>
+<button data-section="performance">🎯 Performance</button>
+</nav>
+<div class="side-bottom"><button class="logout" id="logout">Log out</button></div>
+</aside>
+<main class="main">
+<div class="top"><div><button class="mobile-menu" id="menuBtn">☰</button><h1 id="pageTitle">Student Dashboard</h1><p id="welcome">Welcome 👋🏾</p></div><div class="avatar" id="avatar">E</div></div>
+
+<section class="section active" id="home">
+<div class="stats">
+<div class="stat"><small>CBTs completed</small><strong id="completed">0</strong></div>
+<div class="stat"><small>Average score</small><strong id="average">—</strong></div>
+<div class="stat"><small>Best subject</small><strong id="best">—</strong></div>
+<div class="stat"><small>Weakest subject</small><strong id="weakest">—</strong></div>
+</div>
+<div class="grid">
+<div class="panel"><h3>Available CBTs</h3><div id="homeCbts" class="empty"><b>No published CBTs yet</b>When your tutors publish a CBT, it will appear here.</div></div>
+<div class="panel"><h3>Subject performance</h3><div id="subjectList"><div class="empty">Complete a CBT to start seeing your subject performance.</div></div></div>
+</div>
+</section>
+
+<section class="section" id="tutors">
+<div class="panel">
+<h3>👨🏾‍🏫 My Tutors</h3>
+<p style="color:#718096;margin-top:0">Your Envoys Tutorial tutors and instructors.</p>
+
+<div class="subject">
+<div>
+<strong>The Envoys Tutorial Team</strong>
+<div style="color:#718096;font-size:13px">Academic Tutors</div>
+</div>
+<span class="pill">Available</span>
+</div>
+
+<div class="subject">
+<div>
+<strong>Need help?</strong>
+<div style="color:#718096;font-size:13px">Contact your tutor for academic assistance.</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section" id="cbts"><div class="panel"><h3>My CBTs</h3><div id="cbtList" class="empty"><b>No CBTs available</b>Your tutors haven't published a CBT yet.</div></div></section>
+<section class="section" id="results"><div class="panel"><h3>My Results</h3><div class="empty"><b>No results yet</b>Your completed CBT results will appear here.</div></div></section>
+<section class="section" id="performance"><div class="grid"><div class="panel"><h3>Best subject</h3><div class="empty" id="bestDetail"><b>Not enough data yet</b>Complete CBTs across subjects to calculate this.</div></div><div class="panel"><h3>Weakest subject</h3><div class="empty" id="weakDetail"><b>Not enough data yet</b>We'll use your CBT performance—not guesses—to calculate this.</div></div></div></section>
+</main></div></div>
+
+<script>
+const URL="https://hxlpfyjyfahtfieqlevp.supabase.co";
+const KEY="sb_publishable_Ng5BwwYQC9Arz1zIAhqIYA_TLESNTYD";
+let mode="login",accessToken=null,currentUser=null;
+const $=id=>document.getElementById(id);
+function show(text,type){$("msg").textContent=text;$("msg").className="msg show "+type}
+function setMode(m){mode=m;$("loginTab").classList.toggle("active",m==="login");$("signupTab").classList.toggle("active",m==="signup");$("nameWrap").classList.toggle("hidden",m!=="signup");$("submitBtn").textContent=m==="signup"?"Create account":"Log in";$("msg").className="msg"}
+$("loginTab").onclick=()=>setMode("login");$("signupTab").onclick=()=>setMode("signup");
+async function request(path,options={}){
+ const headers={"apikey":KEY,"Content-Type":"application/json",...(options.headers||{})};
+ if(accessToken)headers.Authorization="Bearer "+accessToken;
+ const r=await fetch(URL+path,{...options,headers});const raw=await r.text();let data=null;try{data=JSON.parse(raw)}catch{}
+ if(!r.ok)throw new Error(data?.msg||data?.message||data?.error_description||raw||"Supabase request failed.");return data;
+}
+$("config").textContent="Connection: ready ✓";
+$("authForm").onsubmit=async e=>{e.preventDefault();$("submitBtn").disabled=true;try{
+ const email=$("email").value.trim(),password=$("password").value;if(password.length<6)throw new Error("Password must be at least 6 characters.");
+ if(mode==="signup"){const name=$("name").value.trim();if(!name)throw new Error("Please enter your full name.");
+ const redirectTo="https://ogunluyiconfam2008-eng.github.io/envoys-tutorial/";
+ const d=await request("/auth/v1/signup?redirect_to="+encodeURIComponent(redirectTo),{method:"POST",body:JSON.stringify({email,password,data:{full_name:name}})});
+ if(!d.access_token){show("Account created. Check your email, confirm it, then log in.","ok");setMode("login");$("password").value="";return}await enter(d);
+ }else{const d=await request("/auth/v1/token?grant_type=password",{method:"POST",body:JSON.stringify({email,password})});await enter(d)}
+}catch(err){show(err.message,"err")}finally{$("submitBtn").disabled=false}};
+async function enter(d){
+ accessToken=d.access_token;currentUser=d.user;
+ let profile=null;try{const rows=await request("/rest/v1/profiles?id=eq."+encodeURIComponent(d.user.id)+"&select=full_name,role");profile=rows[0]}catch{}
+ $("authBox").style.display="none";$("portal").style.display="block";
+ const name=profile?.full_name||d.user.email; $("welcome").textContent="Welcome, "+name+" 👋🏾";$("avatar").textContent=name.charAt(0).toUpperCase();
+ // Role is displayed but this first dashboard is intentionally student-focused.
+}
+document.querySelectorAll(".nav button").forEach(btn=>btn.onclick=()=>{document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));$(btn.dataset.section).classList.add("active");$("pageTitle").textContent={home:"Student Dashboard",tutors:"My Tutors",cbts:"My CBTs",results:"My Results",performance:"Performance"}[btn.dataset.section];$("sidebar").classList.remove("open")});
+$("menuBtn").onclick=()=>$("sidebar").classList.toggle("open");
+$("logout").onclick=async()=>{try{if(accessToken)await request("/auth/v1/logout",{method:"POST"})}catch{}accessToken=null;currentUser=null;$("portal").style.display="none";$("authBox").style.display="grid";$("authForm").reset();setMode("login")};
+</script>
+
+<section class="materials-panel" id="studyMaterialsPanel">
+  <div class="materials-title">
+    <h3>📚 Study Materials</h3>
+    <button type="button" class="refresh" onclick="loadStudyMaterials()">↻ Refresh</button>
+  </div>
+  <div id="studyMaterialsList">
+    <div class="material-empty">Sign in to load your study materials.</div>
+  </div>
+</section>
+
+
+<script>
+/* ===== ENVOYS STUDY MATERIALS (student reader layer) ===== */
+const MATERIALS_BUCKET = "study-materials";
+
+async function loadStudyMaterials(){
+  const host = document.getElementById("studyMaterialsList");
+  if(!host) return;
+
+  host.innerHTML='<div class="material-empty">Loading study materials…</div>';
+
+  try{
+    const headers={"apikey":KEY,"Content-Type":"application/json"};
+    if(accessToken) headers.Authorization="Bearer "+accessToken;
+
+    /* Uses a future materials table if it exists. We keep the UI graceful
+       while the tutor upload/database layer is being built. */
+    const r=await fetch(
+      URL+"/rest/v1/materials?select=id,title,description,subject_id,file_name,file_type,file_path,created_at&order=created_at.desc",
+      {headers}
+    );
+    const raw=await r.text();
+    let data=null; try{data=raw?JSON.parse(raw):null}catch{}
+
+    if(!r.ok){
+      if(r.status===404 || r.status===400){
+        host.innerHTML='<div class="material-empty"><b>No study materials yet.</b><br>The materials database is being prepared. Your tutors will be able to publish PDFs and HTML notes here.</div>';
+        return;
+      }
+      throw new Error(data?.message||data?.hint||raw||"Could not load study materials.");
+    }
+
+    renderStudyMaterials(Array.isArray(data)?data:[]);
+  }catch(e){
+    host.innerHTML='<div class="material-empty"><b>Study Materials</b><br>'+escapeMaterial(e.message)+'</div>';
+  }
+}
+
+function renderStudyMaterials(items){
+  const host=document.getElementById("studyMaterialsList");
+  if(!host)return;
+
+  if(!items.length){
+    host.innerHTML='<div class="material-empty"><b>No study materials yet.</b><br>New notes published by your tutors will appear here.</div>';
+    return;
+  }
+
+  host.innerHTML=items.map(m=>{
+    const type=(m.file_type||"").toLowerCase();
+    const isPdf=type.includes("pdf") || String(m.file_name||"").toLowerCase().endsWith(".pdf");
+    const icon=isPdf?"📄":"🌐";
+    const label=isPdf?"PDF":"HTML Note";
+    const id=escapeMaterial(m.id);
+    return `<article class="material-card">
+      <div class="material-icon">${icon}</div>
+      <h4>${escapeMaterial(m.title||m.file_name||"Study Material")}</h4>
+      <div class="material-meta">${label}${m.description?" · "+escapeMaterial(m.description):""}</div>
+      <button type="button" onclick="openStudyMaterial('${id}')">Read</button>
+    </article>`;
+  }).join("");
+}
+
+function escapeMaterial(v){
+  return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+async function openStudyMaterial(id){
+  /* The secure file URL will be generated here once the tutor upload
+     and Supabase Storage policy are enabled. */
+  alert("This material is selected. The secure PDF/HTML reader is the next part of the Study Materials build.");
+}
+
+window.loadStudyMaterials=loadStudyMaterials;
+</script>
+
+<script>setTimeout(()=>{if(typeof loadStudyMaterials==='function')loadStudyMaterials()},900);</script>
+</body></html>
