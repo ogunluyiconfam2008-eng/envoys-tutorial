@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Envoys Tutorial</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f4f7fb;color:#10223f}
+button,input{font:inherit}.hidden{display:none!important}
+.auth{min-height:100vh;display:grid;place-items:center;padding:20px}.box{width:min(900px,94vw);background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 20px 65px #061a3620;display:grid;grid-template-columns:42% 58%}
+.left{background:#061a36;color:#fff;padding:45px;display:flex;flex-direction:column;justify-content:center}.cap{font-size:58px}.left h1{font-size:38px;margin:6px 0}.gold{color:#f5bd35;font-weight:900;letter-spacing:1px}.left p{color:#cbd5e1;line-height:1.6}.right{padding:42px}.right h2{margin:0 0 7px;font-size:28px}.sub{color:#718096;margin:0 0 24px}
+.tabs{display:flex;border-bottom:1px solid #dce3ec;margin-bottom:18px}.tabs button{flex:1;background:none;border:0;padding:12px;font-weight:800;color:#718096}.tabs button.active{color:#1769aa;border-bottom:3px solid #f5bd35}
+label{display:block;font-size:13px;font-weight:800;margin:14px 0 6px}input{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:9px}button.primary{width:100%;margin-top:20px;padding:14px;border:0;border-radius:9px;background:#061a36;color:#fff;font-weight:900}button:disabled{opacity:.6}.msg{display:none;margin-top:15px;padding:12px;border-radius:9px;font-size:13px;line-height:1.45}.msg.show{display:block}.ok{background:#e9f8f1;color:#106b4d}.err{background:#fff0f1;color:#a52d38}.config{margin-top:20px;font-size:11px;color:#718096}
+#portal{display:none;min-height:100vh}.layout{display:flex;min-height:100vh}.sidebar{width:245px;background:#061a36;color:#fff;padding:22px 14px;position:fixed;left:0;top:0;bottom:0;display:flex;flex-direction:column}.brand{padding:8px 12px 28px;font-size:20px;font-weight:900}.brand span{color:#f5bd35}.nav{display:flex;flex-direction:column;gap:6px}.nav button{background:none;border:0;color:#cbd5e1;text-align:left;padding:12px 14px;border-radius:10px;font-weight:750;cursor:pointer}.nav button.active,.nav button:hover{background:#ffffff12;color:#fff}.nav button.active{border-left:3px solid #f5bd35}.side-bottom{margin-top:auto;padding:12px}.logout{width:100%;background:#ffffff10;border:1px solid #ffffff22;color:#fff;border-radius:9px;padding:11px}.main{margin-left:245px;width:calc(100% - 245px);padding:28px;max-width:1400px}.top{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:25px}.top h1{margin:0;font-size:28px}.top p{margin:4px 0 0;color:#718096}.avatar{width:44px;height:44px;border-radius:50%;background:#f5bd35;color:#061a36;display:grid;place-items:center;font-weight:900}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.stat{background:#fff;border:1px solid #dce3ec;border-radius:15px;padding:19px}.stat small{color:#718096;font-weight:700}.stat strong{display:block;font-size:26px;margin-top:8px}.grid{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;margin-top:18px}.panel{background:#fff;border:1px solid #dce3ec;border-radius:15px;padding:20px}.panel h3{margin:0 0 15px}.subject{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #edf1f5}.subject:last-child{border-bottom:0}.pill{padding:5px 9px;border-radius:20px;background:#eef5fb;color:#1769aa;font-size:12px;font-weight:800}.empty{text-align:center;padding:28px 10px;color:#718096}.empty b{display:block;color:#10223f;margin-bottom:5px}.cbt-card{border:1px solid #e0e6ed;border-radius:12px;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:12px}.cbt-card button{background:#061a36;color:#fff;border:0;border-radius:8px;padding:9px 13px;font-weight:800}.section{display:none}.section.active{display:block}.mobile-menu{display:none}
+@media(max-width:850px){.sidebar{width:205px}.main{margin-left:205px;width:calc(100% - 205px)}.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}}
+@media(max-width:650px){.box{grid-template-columns:1fr}.left{display:none}.right{padding:30px 23px}.sidebar{position:fixed;transform:translateX(-100%);transition:.2s;width:245px;z-index:5}.sidebar.open{transform:translateX(0)}.main{margin-left:0;width:100%;padding:20px 16px}.mobile-menu{display:block;border:1px solid #dce3ec;background:#fff;border-radius:9px;padding:9px 12px}.top{align-items:flex-start}.stats{grid-template-columns:1fr 1fr}.stat strong{font-size:22px}}
+</style>
+
+<style>
+/* ===== ENVOYS STUDY MATERIALS ===== */
+.materials-panel{margin-top:24px;background:#fff;border:1px solid #dce3ec;border-radius:16px;padding:22px}
+.materials-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.materials-title h3{margin:0}
+.material-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:16px}
+.material-card{border:1px solid #e2e8f0;border-radius:13px;padding:16px}
+.material-icon{font-size:27px}.material-card h4{margin:8px 0 5px}
+.material-meta{font-size:13px;color:#718096}.material-card button{margin-top:12px;border:0;border-radius:8px;padding:9px 13px;font-weight:800;background:#061a36;color:#fff}
+.material-empty{padding:18px 0;color:#718096}
+</style>
+
+
+<style>
+.admin-only{display:none}
+.role-admin-only{display:none}
+.user-mgmt{margin-top:22px;border-top:1px solid #e2e8f0;padding-top:22px}
+.user-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
+.user-toolbar input{flex:1;min-width:220px;padding:11px;border:1px solid #cbd5e1;border-radius:9px}
+.user-table-wrap{overflow:auto;border:1px solid #e2e8f0;border-radius:12px}
+.user-table{width:100%;border-collapse:collapse;min-width:620px}
+.user-table th,.user-table td{padding:11px 12px;border-bottom:1px solid #edf2f7;text-align:left;font-size:13px}
+.user-table th{background:#f8fafc}
+.role-pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2ff;font-size:11px;font-weight:800;text-transform:capitalize}
+.role-select{padding:8px;border:1px solid #cbd5e1;border-radius:8px}
+.user-note{color:#718096;font-size:13px;margin:4px 0 12px}
+
+.admin-panel{background:#fff;border:1px solid #dce3ec;border-radius:16px;padding:22px}
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+.admin-card{border:1px solid #e2e8f0;border-radius:13px;padding:16px}
+.admin-card h3{margin:0 0 8px}.admin-card p{color:#718096;margin:0 0 14px}
+.admin-btn{border:0;border-radius:9px;padding:10px 14px;font-weight:800;background:#061a36;color:#fff;cursor:pointer}
+.role-badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#eef5fb;color:#1769aa;font-size:12px;font-weight:800;margin-left:8px}
+
+.creator-wrap{margin-top:22px;border-top:1px solid #e2e8f0;padding-top:22px}.creator-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px}.creator-head h3{margin:0 0 5px}.creator-head p{margin:0;color:#718096}.creator-fields{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.creator-fields input,.creator-fields select,.question-card input,.question-card textarea,.question-card select{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:9px;background:#fff}.question-card{border:1px solid #dce3ec;border-radius:14px;padding:17px;margin-top:16px;background:#fbfdff}.question-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.question-top h4{margin:0}.question-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.question-card textarea{min-height:82px;resize:vertical}.correct-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.correct-row label{display:flex;align-items:center;gap:7px;padding:9px;border:1px solid #e2e8f0;border-radius:8px;margin:0;font-size:12px}.correct-row input{width:auto}.creator-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.creator-actions .admin-btn{width:auto}.secondary-btn{background:#e2e8f0;color:#10223f}.remove-question{background:#fff0f1;color:#a52d38;border:1px solid #ffd4d8}.draft-btn{background:#53657d}.publish-btn{background:#1769aa}.add-question{background:#f5bd35;color:#061a36}.msg.show{display:block}.creator-msg{margin-top:12px}@media(max-width:650px){.creator-fields,.question-grid{grid-template-columns:1fr}.creator-head{flex-direction:column}}
+</style>
+<style>
+/* ===== ENVOYS STUDENT CBT EXAM ===== */
+.cbt-list-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.cbt-live-card{border:1px solid #dce3ec;border-radius:14px;padding:17px;background:#fff}
+.cbt-live-card h4{margin:0 0 7px;font-size:17px}.cbt-live-card p{margin:5px 0;color:#718096;font-size:13px}
+.cbt-meta{display:flex;gap:8px;flex-wrap:wrap;margin:11px 0}.cbt-meta span{padding:5px 9px;border-radius:20px;background:#eef5fb;color:#1769aa;font-size:11px;font-weight:800}
+.start-cbt{border:0;border-radius:9px;padding:10px 14px;background:#061a36;color:#fff;font-weight:900;cursor:pointer}
+.exam-shell{background:#fff;border:1px solid #dce3ec;border-radius:16px;overflow:hidden}
+.exam-head{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:17px 20px;background:#061a36;color:#fff}
+.exam-head h2{margin:0;font-size:19px}.exam-head p{margin:4px 0 0;color:#cbd5e1;font-size:12px}
+.timer-box{min-width:105px;text-align:center;border:1px solid #ffffff35;border-radius:10px;padding:8px 10px;background:#ffffff10}
+.timer-box small{display:block;color:#cbd5e1;font-size:10px}.timer-box strong{font-size:20px;color:#fff}
+.exam-body{display:grid;grid-template-columns:1fr 245px;min-height:520px}
+.exam-question-area{padding:24px}.exam-q-number{color:#1769aa;font-weight:900;font-size:13px;margin-bottom:8px}
+.exam-question{font-size:19px;line-height:1.55;font-weight:750;margin-bottom:20px}
+.exam-options{display:grid;gap:11px}.exam-option{display:flex;align-items:flex-start;gap:12px;border:1px solid #dce3ec;border-radius:11px;padding:13px;text-align:left;background:#fff;cursor:pointer}
+.exam-option:hover{border-color:#1769aa}.exam-option.selected{border-color:#1769aa;background:#eef5fb}
+.exam-option .letter{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#edf2f7;font-weight:900;flex:none}.exam-option.selected .letter{background:#061a36;color:#fff}
+.exam-controls{display:flex;justify-content:space-between;gap:10px;margin-top:25px;border-top:1px solid #edf1f5;padding-top:18px}
+.exam-controls button{border:0;border-radius:9px;padding:10px 15px;font-weight:850;cursor:pointer}.prev-q{background:#e2e8f0;color:#10223f}.next-q{background:#061a36;color:#fff}.submit-exam{background:#f5bd35;color:#061a36}
+.exam-side{border-left:1px solid #e2e8f0;padding:18px;background:#f8fafc}.exam-side h3{margin:0 0 5px}.exam-side p{font-size:12px;color:#718096;margin:0 0 14px}
+.question-palette{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.palette-btn{border:1px solid #cbd5e1;background:#fff;border-radius:7px;padding:8px 0;font-weight:800;cursor:pointer}.palette-btn.current{outline:2px solid #1769aa}.palette-btn.answered{background:#061a36;color:#fff;border-color:#061a36}
+.exam-legend{margin-top:17px;font-size:11px;color:#718096;line-height:1.8}.legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;background:#061a36}.legend-dot.empty-dot{background:#fff;border:1px solid #cbd5e1}
+.exam-note{margin-top:16px;padding:11px;border-radius:9px;background:#fff7df;color:#725400;font-size:11px;line-height:1.45}
+.exam-result{padding:28px;text-align:center}.score-big{font-size:44px;font-weight:950;color:#061a36;margin:8px 0}.result-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.result-actions button{border:0;border-radius:9px;padding:10px 15px;font-weight:850;cursor:pointer}
+@media(max-width:750px){.exam-body{grid-template-columns:1fr}.exam-side{border-left:0;border-top:1px solid #e2e8f0}.question-palette{grid-template-columns:repeat(8,1fr)}.exam-question{font-size:17px}.exam-head{align-items:flex-start}.timer-box{min-width:92px}}
+@media(max-width:480px){.question-palette{grid-template-columns:repeat(5,1fr)}.exam-question-area{padding:18px}.exam-controls button{padding:9px 10px;font-size:12px}}
+</style>
+</head>
+<body>
+<div class="auth" id="authBox">
+<section class="box">
+<div class="left"><div class="cap">🎓</div><h1>THE ENVOYS</h1><div class="gold">TUTORIAL</div><p>Weekly UTME-style CBTs, results and performance tracking.</p></div>
+<section class="right"><h2>Envoys Tutorial Portal</h2><p class="sub">Your account is the key to your personal dashboard.</p>
+<div class="tabs"><button type="button" id="loginTab" class="active">Log in</button><button type="button" id="signupTab">Create account</button></div>
+<form id="authForm"><div id="nameWrap" class="hidden"><label for="name">Full name</label><input id="name" autocomplete="name" placeholder="Your full name"></div>
+<label for="email">Email address</label><input id="email" type="email" required autocomplete="email" placeholder="you@example.com">
+<label for="password">Password</label><input id="password" type="password" required autocomplete="current-password" placeholder="At least 6 characters">
+<button class="primary" id="submitBtn" type="submit">Log in</button></form>
+<div id="msg" class="msg"></div><div class="config" id="config">Connection: checking…</div>
+</section></section></div>
+
+<div id="portal">
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+<div class="brand">🎓 THE <span>ENVOYS</span></div>
+<nav class="nav">
+<button class="active" data-section="home">🏠 Dashboard</button>
+<button data-section="tutors">👨🏾‍🏫 My Tutors</button>
+<button data-section="materials">📚 Study Materials</button>
+<button data-section="cbts">📝 My CBTs</button>
+<button data-section="results">📊 My Results</button>
+<button data-section="performance">🎯 Performance</button>
+<button data-section="contact">📩 Contact Us</button>
+<button class="admin-only" id="adminNav" data-section="admin">🛠️ Admin</button>
+</nav>
+<div class="side-bottom"><button class="logout" id="logout">Log out</button></div>
+</aside>
+<main class="main">
+<div class="top"><div><button class="mobile-menu" id="menuBtn">☰</button><h1 id="pageTitle">Student Dashboard</h1><p id="welcome">Welcome 👋🏾 <span class="role-badge" id="roleBadge">student</span></p></div><div class="avatar" id="avatar">E</div></div>
+
+<section class="section active" id="home">
+<div class="stats">
+<div class="stat"><small>CBTs completed</small><strong id="completed">0</strong></div>
+<div class="stat"><small>Average score</small><strong id="average">—</strong></div>
+<div class="stat"><small>Best subject</small><strong id="best">—</strong></div>
+<div class="stat"><small>Weakest subject</small><strong id="weakest">—</strong></div>
+</div>
+<div class="grid">
+<div class="panel"><h3>Available CBTs</h3><div id="homeCbts" class="empty"><b>Loading CBTs…</b>Please wait.</div></div>
+<div class="panel"><h3>Subject performance</h3><div id="subjectList"><div class="empty">Complete a CBT to start seeing your subject performance.</div></div></div>
+</div>
+</section>
+
+<section class="section" id="cbts">
+<div class="panel">
+  <div class="materials-title"><h3>📝 My CBTs</h3><button type="button" class="refresh" onclick="loadAvailableCbts()">↻ Refresh</button></div>
+  <div id="cbtList" class="empty"><b>Loading CBTs…</b>Please wait.</div>
+</div>
+</section>
+
+<section class="section" id="exam">
+  <div id="examHost">
+    <div class="exam-shell">
+      <div class="exam-head">
+        <div><h2 id="examTitle">CBT Examination</h2><p id="examSubtitle">Answer each question and use the palette to move around.</p></div>
+        <div class="timer-box"><small>TIME LEFT</small><strong id="examTimer">--:--</strong></div>
+      </div>
+      <div class="exam-body">
+        <div class="exam-question-area">
+          <div class="exam-q-number" id="examQNumber">Question 1</div>
+          <div class="exam-question" id="examQuestion">Loading question…</div>
+          <div class="exam-options" id="examOptions"></div>
+          <div class="exam-controls">
+            <button class="prev-q" type="button" onclick="previousExamQuestion()">← Previous</button>
+            <button class="next-q" id="nextExamBtn" type="button" onclick="nextExamQuestion()">Next →</button>
+            <button class="submit-exam" type="button" onclick="confirmSubmitExam()">Submit</button>
+          </div>
+        </div>
+        <aside class="exam-side">
+          <h3>Questions</h3>
+          <p id="examProgress">0 answered</p>
+          <div class="question-palette" id="questionPalette"></div>
+          <div class="exam-legend">
+            <div><span class="legend-dot"></span> Answered</div>
+            <div><span class="legend-dot empty-dot"></span> Unanswered</div>
+          </div>
+          <div class="exam-note">Your answers are saved while you move through the CBT. The test will submit automatically when the timer reaches zero.</div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="results"><div class="panel"><h3>My Results</h3><div class="empty"><b>No results yet</b>Your completed CBT results will appear here.</div></div></section>
+<section class="section" id="performance"><div class="grid"><div class="panel"><h3>Best subject</h3><div class="empty" id="bestDetail"><b>Not enough data yet</b>Complete CBTs across subjects to calculate this.</div></div><div class="panel"><h3>Weakest subject</h3><div class="empty" id="weakDetail"><b>Not enough data yet</b>We'll use your CBT performance—not guesses—to calculate this.</div></div></div></section>
+
+<section class="section" id="tutors"><div class="panel"><h3>👨🏾‍🏫 My Tutors</h3><div class="empty"><b>Your tutors will appear here.</b>We’ll connect tutor profiles and contact options as the tutor system is built.</div></div></section>
+<section class="section" id="materials"><div class="panel"><div class="materials-title"><h3>📚 Study Materials</h3><button type="button" class="refresh" onclick="loadStudyMaterials()">↻ Refresh</button></div><div id="studyMaterialsList"><div class="material-empty">Sign in to load your study materials.</div></div></div></section>
+<section class="section" id="contact"><div class="panel"><h3>📩 Contact Us</h3><div class="empty"><b>Need help?</b>Your Envoys contact options will appear here.</div></div></section>
+<section class="section" id="admin">
+<div class="admin-panel">
+<h2>🛠️ Admin Centre</h2><p>Manage CBTs, questions, students and tutorial content.</p>
+<div class="admin-grid">
+<div class="admin-card"><h3>📝 CBT Creator</h3><p>Create and publish UTME-style CBTs and questions.</p><button class="admin-btn" type="button" onclick="openCbtCreator()">Open CBT Creator</button></div>
+<div class="admin-card"><h3>👥 Students</h3><p>View student profiles and performance.</p><button class="admin-btn" type="button" onclick="openUserManagement()">Manage Students</button></div>
+<div class="admin-card role-admin-only" id="roleManagementCard"><h3>👑 User & Role Management</h3><p>Promote tutors to admin or change user roles.</p><button class="admin-btn" type="button" onclick="openUserManagement()">Manage Roles</button></div>
+<div class="admin-card"><h3>📊 Analytics</h3><p>See scores, attempts and frequently missed questions.</p><button class="admin-btn" type="button" onclick="alert('Analytics will be connected to attempts and answers next.')">View Analytics</button></div>
+</div>
+<div id="userManagement" class="user-mgmt hidden">
+<div class="creator-head"><div><h3>👑 User & Role Management</h3><p>Admins can change user roles. Role changes are protected by Supabase.</p></div><button class="admin-btn secondary-btn" type="button" onclick="closeUserManagement()">Close</button></div>
+<div class="user-toolbar"><input id="userSearch" placeholder="Search by name…"><button class="admin-btn secondary-btn" type="button" onclick="loadUsers()">↻ Refresh</button></div>
+<div id="userMsg" class="msg"></div>
+<div class="user-note">Use <b>Admin</b> for people who should be able to manage tutors and roles. Use <b>Tutor</b> for people who create CBTs and learning content.</div>
+<div class="user-table-wrap"><table class="user-table"><thead><tr><th>Name</th><th>Role</th><th>Change role</th></tr></thead><tbody id="userTableBody"><tr><td colspan="3">Loading users…</td></tr></tbody></table></div>
+</div>
+<div id="cbtCreator" class="creator-wrap hidden">
+<div class="creator-head"><div><h3>📝 CBT Creator</h3><p>Create a CBT, add as many questions as you need, then save it as a draft or publish it.</p><p style="margin-top:6px;color:#1769aa;font-weight:700">Scoring: each question can have its own points. The final score is automatically scaled to 400.</p></div><button class="admin-btn secondary-btn" type="button" onclick="closeCbtCreator()">Close</button></div>
+<form id="cbtForm">
+<div class="creator-fields">
+<div><label for="cbtTitle">CBT title</label><input id="cbtTitle" required placeholder="e.g. Biology Week 1 CBT"></div>
+<div><label for="cbtSubject">Subject</label><select id="cbtSubject" required><option value="">Loading subjects…</option></select></div>
+<div><label for="cbtDuration">Duration (minutes)</label><input id="cbtDuration" type="number" min="1" value="30" required></div>
+<div><label for="cbtDescription">Description</label><input id="cbtDescription" placeholder="Optional instructions or topic"></div>
+</div>
+<div id="questionBuilder">
+<div class="question-card" data-number="1">
+  <div class="question-top"><h4>Question 1</h4><button class="admin-btn remove-question" type="button" onclick="removeQuestion(this)">Remove</button></div>
+  <label>Question</label><textarea class="q-text" required placeholder="Type the question here…"></textarea>
+  <div class="question-grid">
+    <div><label>Option A</label><input class="q-a" required></div>
+    <div><label>Option B</label><input class="q-b" required></div>
+    <div><label>Option C</label><input class="q-c" required></div>
+    <div><label>Option D</label><input class="q-d" required></div>
+  </div>
+  <div class="question-grid">
+    <div><label>Topic (optional)</label><input class="q-topic" placeholder="e.g. Cell biology"></div>
+    <div><label>Correct option</label><select class="q-correct"><option value="1">A</option><option value="2">B</option><option value="3">C</option><option value="4">D</option></select></div>
+  </div>
+  <div class="question-grid">
+    <div><label>Points for this question</label><input class="q-points" type="number" min="0" step="0.1" value="1" required></div>
+    <div><label>Scoring</label><input value="Score is scaled to 400" disabled></div>
+  </div>
+</div>
+</div>
+<div class="creator-actions"><button class="admin-btn add-question" type="button" onclick="addQuestion()">＋ Add Question</button><button class="admin-btn draft-btn" type="button" onclick="saveCbt('draft')">Save Draft</button><button class="admin-btn publish-btn" type="button" onclick="saveCbt('published')">🚀 Publish CBT</button></div>
+<div id="creatorMsg" class="msg"></div>
+</form>
+</div>
+</div></section>
+</main></div></div>
+
+<script>
+const URL="https://hxlpfyjyfahtfieqlevp.supabase.co";
+const KEY="sb_publishable_Ng5BwwYQC9Arz1zIAhqIYA_TLESNTYD";
+let mode="login",accessToken=null,currentUser=null,currentRole="student";
+const $=id=>document.getElementById(id);
+function show(text,type){$("msg").textContent=text;$("msg").className="msg show "+type}
+function setMode(m){mode=m;$("loginTab").classList.toggle("active",m==="login");$("signupTab").classList.toggle("active",m==="signup");$("nameWrap").classList.toggle("hidden",m!=="signup");$("submitBtn").textContent=m==="signup"?"Create account":"Log in";$("msg").className="msg"}
+$("loginTab").onclick=()=>setMode("login");$("signupTab").onclick=()=>setMode("signup");
+async function request(path,options={}){
+ const headers={"apikey":KEY,"Content-Type":"application/json",...(options.headers||{})};
+ if(accessToken)headers.Authorization="Bearer "+accessToken;
+ const r=await fetch(URL+path,{...options,headers});const raw=await r.text();let data=null;try{data=JSON.parse(raw)}catch{}
+ if(!r.ok)throw new Error(data?.msg||data?.message||data?.error_description||raw||"Supabase request failed.");return data;
+}
+$("config").textContent="Connection: ready ✓";
+$("authForm").onsubmit=async e=>{e.preventDefault();$("submitBtn").disabled=true;try{
+ const email=$("email").value.trim(),password=$("password").value;if(password.length<6)throw new Error("Password must be at least 6 characters.");
+ if(mode==="signup"){const name=$("name").value.trim();if(!name)throw new Error("Please enter your full name.");
+ const redirectTo="https://ogunluyiconfam2008-eng.github.io/envoys-tutorial/";
+ const d=await request("/auth/v1/signup?redirect_to="+encodeURIComponent(redirectTo),{method:"POST",body:JSON.stringify({email,password,data:{full_name:name}})});
+ if(!d.access_token){show("Account created. Check your email, confirm it, then log in.","ok");setMode("login");$("password").value="";return}await enter(d);
+ }else{const d=await request("/auth/v1/token?grant_type=password",{method:"POST",body:JSON.stringify({email,password})});await enter(d)}
+}catch(err){show(err.message,"err")}finally{$("submitBtn").disabled=false}};
+async function enter(d){
+ accessToken=d.access_token;currentUser=d.user;
+ let profile=null;try{const rows=await request("/rest/v1/profiles?id=eq."+encodeURIComponent(d.user.id)+"&select=full_name,role");profile=rows[0]}catch{}
+ $("authBox").style.display="none";$("portal").style.display="block";
+ const name=profile?.full_name||d.user.email; currentRole=(profile?.role||"student").toLowerCase();
+ $("welcome").textContent="Welcome, "+name+" 👋🏾";$("avatar").textContent=name.charAt(0).toUpperCase();
+ const adminNav=$("adminNav"); if(adminNav) adminNav.style.display=(currentRole==="admin"||currentRole==="tutor")?"block":"none";
+ const roleCard=$("roleManagementCard"); if(roleCard) roleCard.style.display=(currentRole==="admin")?"block":"none";
+ const roleBadge=$("roleBadge"); if(roleBadge) roleBadge.textContent=currentRole;
+ if(typeof loadStudyMaterials==="function") setTimeout(loadStudyMaterials,100); if(typeof loadAvailableCbts==="function") setTimeout(loadAvailableCbts,120);
+}
+document.querySelectorAll(".nav button").forEach(btn=>btn.onclick=()=>{
+ if(btn.classList.contains("admin-only") && !(currentRole==="admin"||currentRole==="tutor")) return;
+ document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));$(btn.dataset.section).classList.add("active");
+ $("pageTitle").textContent={home:"Student Dashboard",tutors:"My Tutors",materials:"Study Materials",cbts:"My CBTs",results:"My Results",performance:"Performance",contact:"Contact Us",exam:"CBT Examination",admin:"Admin"}[btn.dataset.section]||"Student Dashboard";
+ $("sidebar").classList.remove("open"); if(btn.dataset.section==="materials"&&typeof loadStudyMaterials==="function")loadStudyMaterials(); if(btn.dataset.section==="cbts"&&typeof loadAvailableCbts==="function")loadAvailableCbts();
+});
+$("menuBtn").onclick=()=>$("sidebar").classList.toggle("open");
+$("logout").onclick=async()=>{try{if(accessToken)await request("/auth/v1/logout",{method:"POST"})}catch{}accessToken=null;currentUser=null;currentRole="student";$("portal").style.display="none";$("authBox").style.display="grid";$("authForm").reset();setMode("login")};
+</script>
+
+
+
+
+<script>
+/* ===== ENVOYS USER / ROLE MANAGEMENT ===== */
+let allUsers=[];
+function userMessage(text,type){const el=document.getElementById('userMsg');if(!el)return;el.textContent=text;el.className='msg show '+(type||'');}
+function openUserManagement(){if(currentRole!=='admin'){userMessage('Only an Admin can manage user roles.','err');return;}const wrap=document.getElementById('userManagement');if(!wrap)return;wrap.classList.remove('hidden');loadUsers();wrap.scrollIntoView({behavior:'smooth',block:'start'});}
+function closeUserManagement(){const wrap=document.getElementById('userManagement');if(wrap)wrap.classList.add('hidden');}
+async function loadUsers(){if(currentRole!=='admin')return;const body=document.getElementById('userTableBody');if(!body)return;body.innerHTML='<tr><td colspan="3">Loading users…</td></tr>';try{allUsers=await request('/rest/v1/profiles?select=id,full_name,role,created_at&order=created_at.asc');renderUsers();userMessage('Users loaded successfully.','ok');}catch(e){body.innerHTML='<tr><td colspan="3">Could not load users.</td></tr>';userMessage('Could not load users: '+e.message,'err');}}
+function renderUsers(){const body=document.getElementById('userTableBody');const search=(document.getElementById('userSearch')?.value||'').trim().toLowerCase();const users=(allUsers||[]).filter(u=>(u.full_name||'').toLowerCase().includes(search));if(!users.length){body.innerHTML='<tr><td colspan="3">No matching users.</td></tr>';return;}body.innerHTML=users.map(u=>{const self=u.id===currentUser?.id;const role=(u.role||'student').toLowerCase();return `<tr><td><b>${escapeHtml(u.full_name||'Unnamed user')}</b>${self?' <span class="role-pill">You</span>':''}</td><td><span class="role-pill">${escapeHtml(role)}</span></td><td>${self?'<span class="user-note">Your own role is protected here.</span>':`<select class="role-select" data-user-id="${escapeHtml(u.id)}" data-old-role="${escapeHtml(role)}" onchange="changeUserRole(this)"><option value="student" ${role==='student'?'selected':''}>Student</option><option value="tutor" ${role==='tutor'?'selected':''}>Tutor</option><option value="admin" ${role==='admin'?'selected':''}>Admin</option></select>`}</td></tr>`;}).join('');}
+async function changeUserRole(select){if(currentRole!=='admin')return;const userId=select.dataset.userId,newRole=select.value,oldRole=select.dataset.oldRole;if(!userId||!['student','tutor','admin'].includes(newRole))return;if(newRole===oldRole)return;if(!confirm(`Change this user's role from ${oldRole} to ${newRole}?`)){select.value=oldRole;return;}select.disabled=true;userMessage('Updating role…','ok');try{await request('/rest/v1/rpc/admin_change_role',{method:'POST',body:JSON.stringify({target_user_id:userId,new_role:newRole})});select.dataset.oldRole=newRole;const found=allUsers.find(u=>u.id===userId);if(found)found.role=newRole;userMessage('✅ Role updated successfully.','ok');renderUsers();}catch(e){select.value=oldRole;userMessage('Could not update role: '+e.message,'err');}finally{select.disabled=false;}}
+const userSearchInput=document.getElementById('userSearch');if(userSearchInput)userSearchInput.addEventListener('input',renderUsers);
+</script>
+
+<script>
+/* ===== ENVOYS STUDY MATERIALS (student reader layer) ===== */
+const MATERIALS_BUCKET = "study-materials";
+
+async function loadStudyMaterials(){
+  const host = document.getElementById("studyMaterialsList");
+  if(!host) return;
+
+  host.innerHTML='<div class="material-empty">Loading study materials…</div>';
+
+  try{
+    const headers={"apikey":KEY,"Content-Type":"application/json"};
+    if(accessToken) headers.Authorization="Bearer "+accessToken;
+
+    /* Uses a future materials table if it exists. We keep the UI graceful
+       while the tutor upload/database layer is being built. */
+    const r=await fetch(
+      URL+"/rest/v1/materials?select=id,title,description,subject_id,file_name,file_type,file_path,created_at&order=created_at.desc",
+      {headers}
+    );
+    const raw=await r.text();
+    let data=null; try{data=raw?JSON.parse(raw):null}catch{}
+
+    if(!r.ok){
+      if(r.status===404 || r.status===400){
+        host.innerHTML='<div class="material-empty"><b>No study materials yet.</b><br>The materials database is being prepared. Your tutors will be able to publish PDFs and HTML notes here.</div>';
+        return;
+      }
+      throw new Error(data?.message||data?.hint||raw||"Could not load study materials.");
+    }
+
+    renderStudyMaterials(Array.isArray(data)?data:[]);
+  }catch(e){
+    host.innerHTML='<div class="material-empty"><b>Study Materials</b><br>'+escapeMaterial(e.message)+'</div>';
+  }
+}
+
+function renderStudyMaterials(items){
+  const host=document.getElementById("studyMaterialsList");
+  if(!host)return;
+
+  if(!items.length){
+    host.innerHTML='<div class="material-empty"><b>No study materials yet.</b><br>New notes published by your tutors will appear here.</div>';
+    return;
+  }
+
+  host.innerHTML=items.map(m=>{
+    const type=(m.file_type||"").toLowerCase();
+    const isPdf=type.includes("pdf") || String(m.file_name||"").toLowerCase().endsWith(".pdf");
+    const icon=isPdf?"📄":"🌐";
+    const label=isPdf?"PDF":"HTML Note";
+    const id=escapeMaterial(m.id);
+    return `<article class="material-card">
+      <div class="material-icon">${icon}</div>
+      <h4>${escapeMaterial(m.title||m.file_name||"Study Material")}</h4>
+      <div class="material-meta">${label}${m.description?" · "+escapeMaterial(m.description):""}</div>
+      <button type="button" onclick="openStudyMaterial('${id}')">Read</button>
+    </article>`;
+  }).join("");
+}
+
+function escapeMaterial(v){
+  return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+async function openStudyMaterial(id){
+  /* The secure file URL will be generated here once the tutor upload
+     and Supabase Storage policy are enabled. */
+  alert("This material is selected. The secure PDF/HTML reader is the next part of the Study Materials build.");
+}
+
+window.loadStudyMaterials=loadStudyMaterials;
+</script>
+
+
+
+<script>
+/* ===== ENVOYS REAL CBT CREATOR ===== */
+let creatorQuestionCount=1;
+
+function creatorMessage(text,type){
+  const el=document.getElementById('creatorMsg');
+  if(!el)return;
+  el.textContent=text;
+  el.className='msg show '+(type||'');
+}
+
+function openCbtCreator(){
+  if(currentRole!=='admin' && currentRole!=='tutor'){ creatorMessage('You do not have permission to create CBTs.','err'); return; }
+  const wrap=document.getElementById('cbtCreator');
+  wrap.classList.remove('hidden');
+  if(!creatorQuestionCount){ addQuestion(); }
+  loadCreatorSubjects();
+  wrap.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeCbtCreator(){ document.getElementById('cbtCreator').classList.add('hidden'); }
+
+async function loadCreatorSubjects(){
+  const select=document.getElementById('cbtSubject');
+  try{
+    const rows=await request('/rest/v1/subjects?select=id,name,code&order=name.asc');
+    select.innerHTML='<option value="">Select a subject</option>'+(rows||[]).map(x=>'<option value="'+x.id+'">'+escapeHtml(x.name)+(x.code?' ('+escapeHtml(x.code)+')':'')+'</option>').join('');
+  }catch(e){
+    select.innerHTML='<option value="">Could not load subjects</option>';
+    creatorMessage('Could not load subjects: '+e.message,'err');
+  }
+}
+function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function addQuestion(){
+  creatorQuestionCount++;
+  const n=creatorQuestionCount;
+  const host=document.getElementById('questionBuilder');
+  const card=document.createElement('div');
+  card.className='question-card';card.dataset.number=n;
+  card.innerHTML=`
+    <div class="question-top"><h4>Question ${n}</h4><button class="admin-btn remove-question" type="button" onclick="removeQuestion(this)">Remove</button></div>
+    <label>Question</label><textarea class="q-text" required placeholder="Type the question here…"></textarea>
+    <div class="question-grid">
+      <div><label>Option A</label><input class="q-a" required></div>
+      <div><label>Option B</label><input class="q-b" required></div>
+      <div><label>Option C</label><input class="q-c" required></div>
+      <div><label>Option D</label><input class="q-d" required></div>
+    </div>
+    <div class="question-grid">
+      <div><label>Topic (optional)</label><input class="q-topic" placeholder="e.g. Cell biology"></div>
+      <div><label>Correct option</label><select class="q-correct"><option value="1">A</option><option value="2">B</option><option value="3">C</option><option value="4">D</option></select></div>
+    </div>
+    <div class="question-grid">
+      <div><label>Points for this question</label><input class="q-points" type="number" min="0" step="0.1" value="1" required></div>
+      <div><label>Scoring</label><input value="Score is scaled to 400" disabled></div>
+    </div>`;
+  host.appendChild(card);
+}
+function removeQuestion(btn){
+  btn.closest('.question-card').remove();
+  [...document.querySelectorAll('.question-card')].forEach((c,i)=>{c.dataset.number=i+1;c.querySelector('h4').textContent='Question '+(i+1);});
+}
+function collectQuestions(){
+  return [...document.querySelectorAll('.question-card')].map((card,i)=>({
+    question_number:i+1,
+    question_text:card.querySelector('.q-text').value.trim(),
+    option_a:card.querySelector('.q-a').value.trim(),
+    option_b:card.querySelector('.q-b').value.trim(),
+    option_c:card.querySelector('.q-c').value.trim(),
+    option_d:card.querySelector('.q-d').value.trim(),
+    correct_option:Number(card.querySelector('.q-correct').value),
+    topic:card.querySelector('.q-topic').value.trim()||null,
+    points:Number(card.querySelector('.q-points').value)
+  }));
+}
+async function saveCbt(status){
+  if(currentRole!=='admin' && currentRole!=='tutor'){creatorMessage('You do not have permission to create CBTs.','err');return;}
+  const title=document.getElementById('cbtTitle').value.trim();
+  const subject_id=document.getElementById('cbtSubject').value;
+  const duration=Number(document.getElementById('cbtDuration').value);
+  const description=document.getElementById('cbtDescription').value.trim()||null;
+  const questions=collectQuestions();
+  if(!title||!subject_id||!Number.isInteger(duration)||duration<1){creatorMessage('Please complete the CBT title, subject and duration.','err');return;}
+  if(!questions.length){creatorMessage('Add at least one question.','err');return;}
+  for(const q of questions){
+    if(!q.question_text||!q.option_a||!q.option_b||!q.option_c||!q.option_d){creatorMessage('Please complete every question and all four options.','err');return;}
+    if(!Number.isFinite(q.points)||q.points<0){creatorMessage('Each question must have a valid points value (0 or more).','err');return;}
+  }
+  const buttons=[...document.querySelectorAll('#cbtForm button')];buttons.forEach(b=>b.disabled=true);
+  creatorMessage(status==='published'?'Publishing CBT…':'Saving draft…','ok');
+  try{
+    const cbt=await request('/rest/v1/cbts',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({subject_id,title,description,duration_minutes:duration,status,created_by:currentUser.id})});
+    const cbtId=cbt?.[0]?.id;
+    if(!cbtId)throw new Error('CBT was created but its ID was not returned.');
+    const payload=questions.map(q=>({...q,cbt_id:cbtId}));
+    try{
+      await request('/rest/v1/questions',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});
+    }catch(qErr){
+      try{await request('/rest/v1/cbts?id=eq.'+encodeURIComponent(cbtId),{method:'DELETE'});}catch{}
+      throw new Error('CBT could not save its questions: '+qErr.message);
+    }
+    creatorMessage(status==='published'?'🎉 CBT published successfully! Students can now see it once the student CBT page is connected.':'✅ CBT draft saved successfully.','ok');
+    document.getElementById('cbtForm').reset();document.getElementById('cbtDuration').value=30;document.getElementById('questionBuilder').innerHTML='';creatorQuestionCount=0;addQuestion();
+  }catch(e){creatorMessage('Could not save CBT: '+e.message,'err');}
+  finally{buttons.forEach(b=>b.disabled=false);}
+}
+</script>
+
+<script>
+/* ===== ENVOYS STUDENT CBT ENGINE ===== */
+let availableCbts=[];
+let activeExam=null;
+let examIndex=0;
+let examAnswers=[];
+let examTimerHandle=null;
+let examStartedAt=null;
+let activeAttemptId=null;
+
+async function loadAvailableCbts(){
+  const list=document.getElementById('cbtList');
+  const home=document.getElementById('homeCbts');
+  if(!accessToken)return;
+  if(list)list.innerHTML='<div class="empty">Loading published CBTs…</div>';
+  if(home)home.innerHTML='<div class="empty">Loading published CBTs…</div>';
+  try{
+    const cbts=await request('/rest/v1/cbts?select=id,subject_id,title,description,duration_minutes,status,created_at&status=eq.published&order=created_at.desc');
+    const subjects=await request('/rest/v1/subjects?select=id,name,code&order=name.asc');
+    const smap=Object.fromEntries((subjects||[]).map(s=>[s.id,s]));
+    availableCbts=(cbts||[]).map(c=>({...c,subject:smap[c.subject_id]}));
+    renderAvailableCbts(list,availableCbts);
+    renderAvailableCbts(home,availableCbts,true);
+  }catch(e){
+    const msg='<div class="empty"><b>Could not load CBTs</b>'+escapeHtml(e.message)+'</div>';
+    if(list)list.innerHTML=msg;
+    if(home)home.innerHTML=msg;
+  }
+}
+
+function renderAvailableCbts(host,items,compact=false){
+  if(!host)return;
+  if(!items.length){
+    host.innerHTML='<div class="empty"><b>No published CBTs yet</b>When your tutors publish a CBT, it will appear here.</div>';
+    return;
+  }
+  host.className=compact?'':'cbt-list-grid';
+  host.innerHTML=items.map(c=>{
+    const subject=c.subject?.name||'Subject';
+    const desc=c.description?escapeHtml(c.description):'No description provided.';
+    const title=escapeHtml(c.title||'Untitled CBT');
+    const duration=Number(c.duration_minutes)||0;
+    return `<article class="cbt-live-card">
+      <h4>${title}</h4>
+      <p>${desc}</p>
+      <div class="cbt-meta"><span>📚 ${escapeHtml(subject)}</span><span>⏱️ ${duration} min</span></div>
+      <button class="start-cbt" type="button" onclick="startExam('${c.id}')">Start CBT →</button>
+    </article>`;
+  }).join('');
+}
+
+async function startExam(cbtId){
+  const cbt=availableCbts.find(x=>x.id===cbtId);
+  if(!cbt){alert('This CBT could not be found. Refresh and try again.');return;}
+  if(!confirm(`Start "${cbt.title}" now? The timer begins immediately.`))return;
+
+  try{
+    const questions=await request('/rest/v1/questions?select=id,question_number,question_text,option_a,option_b,option_c,option_d,correct_option,topic,points&cbt_id=eq.'+encodeURIComponent(cbtId)+'&order=question_number.asc');
+    if(!questions||!questions.length)throw new Error('This CBT has no questions yet.');
+    activeExam={...cbt,questions};
+    examIndex=0;
+    examAnswers=new Array(questions.length).fill(null);
+    examStartedAt=new Date().toISOString();
+    activeAttemptId=null;
+
+    /* Create the attempt first so answers can be linked to it. */
+    try{
+      const attempt=await request('/rest/v1/attempts',{
+        method:'POST',
+        headers:{Prefer:'return=representation'},
+        body:JSON.stringify({user_id:currentUser.id,cbt_id:cbtId,started_at:examStartedAt})
+      });
+      activeAttemptId=attempt?.[0]?.id||null;
+    }catch(attemptErr){
+      /* The exam can still be used if the attempts table/policy is not ready yet. */
+      console.warn('Attempt creation:',attemptErr.message);
+    }
+
+    openExamView();
+    startExamTimer(Number(cbt.duration_minutes)||30);
+  }catch(e){
+    alert('Could not start CBT: '+e.message);
+  }
+}
+
+function openExamView(){
+  document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+  document.getElementById('exam').classList.add('active');
+  document.getElementById('pageTitle').textContent='CBT Examination';
+  document.getElementById('examTitle').textContent=activeExam.title;
+  document.getElementById('examSubtitle').textContent=(activeExam.subject?.name||'CBT')+' · '+activeExam.questions.length+' questions';
+  renderExamQuestion();
+}
+
+function startExamTimer(minutes){
+  clearInterval(examTimerHandle);
+  let seconds=Math.max(1,Math.round(minutes*60));
+  const timer=document.getElementById('examTimer');
+  const tick=()=>{
+    const m=Math.floor(seconds/60),s=seconds%60;
+    timer.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    if(seconds<=0){
+      clearInterval(examTimerHandle);
+      submitExam(true);
+      return;
+    }
+    seconds--;
+  };
+  tick();
+  examTimerHandle=setInterval(tick,1000);
+}
+
+function renderExamQuestion(){
+  const q=activeExam.questions[examIndex];
+  if(!q)return;
+  document.getElementById('examQNumber').textContent=`Question ${examIndex+1} of ${activeExam.questions.length}`;
+  document.getElementById('examQuestion').textContent=q.question_text||'';
+  const options=[q.option_a,q.option_b,q.option_c,q.option_d];
+  const letters=['A','B','C','D'];
+  document.getElementById('examOptions').innerHTML=options.map((text,i)=>{
+    const selected=examAnswers[examIndex]===i+1;
+    return `<button type="button" class="exam-option ${selected?'selected':''}" onclick="selectExamAnswer(${i+1})">
+      <span class="letter">${letters[i]}</span><span>${escapeHtml(text||'')}</span>
+    </button>`;
+  }).join('');
+  document.getElementById('nextExamBtn').textContent=examIndex===activeExam.questions.length-1?'Finish →':'Next →';
+  renderPalette();
+}
+
+function selectExamAnswer(option){
+  examAnswers[examIndex]=option;
+  renderExamQuestion();
+}
+
+function renderPalette(){
+  const host=document.getElementById('questionPalette');
+  host.innerHTML=activeExam.questions.map((q,i)=>{
+    const answered=examAnswers[i]!=null;
+    const current=i===examIndex;
+    return `<button type="button" class="palette-btn ${answered?'answered':''} ${current?'current':''}" onclick="goExamQuestion(${i})">${i+1}</button>`;
+  }).join('');
+  const answered=examAnswers.filter(x=>x!=null).length;
+  document.getElementById('examProgress').textContent=`${answered} of ${activeExam.questions.length} answered`;
+}
+
+function goExamQuestion(i){
+  if(!activeExam)return;
+  if(i<0||i>=activeExam.questions.length)return;
+  examIndex=i;renderExamQuestion();
+}
+function previousExamQuestion(){goExamQuestion(examIndex-1);}
+function nextExamQuestion(){
+  if(examIndex===activeExam.questions.length-1){confirmSubmitExam();return;}
+  goExamQuestion(examIndex+1);
+}
+
+function confirmSubmitExam(){
+  if(!activeExam)return;
+  const unanswered=examAnswers.filter(x=>x==null).length;
+  const text=unanswered?`You have ${unanswered} unanswered question(s). Submit anyway?`:'Submit your CBT now?';
+  if(confirm(text))submitExam(false);
+}
+
+async function submitExam(autoSubmitted){
+  if(!activeExam)return;
+  clearInterval(examTimerHandle);
+  const total=activeExam.questions.length;
+  let correct=0;
+  let totalPoints=0;
+  let earnedPoints=0;
+  activeExam.questions.forEach((q,i)=>{
+    const pts=Number(q.points);
+    const weight=Number.isFinite(pts)&&pts>=0?pts:1;
+    totalPoints+=weight;
+    if(Number(examAnswers[i])===Number(q.correct_option)){
+      correct++;
+      earnedPoints+=weight;
+    }
+  });
+  const score400=totalPoints>0?Math.round((earnedPoints/totalPoints)*400):0;
+  const scorePercent=totalPoints>0?Math.round((earnedPoints/totalPoints)*100):0;
+
+  /* Save answers where the attempt was created successfully. */
+  if(activeAttemptId){
+    try{
+      const answerRows=activeExam.questions.map((q,i)=>({
+        attempt_id:activeAttemptId,
+        question_id:q.id,
+        selected_option:examAnswers[i],
+        is_correct:examAnswers[i]!=null && Number(examAnswers[i])===Number(q.correct_option)
+      }));
+      await request('/rest/v1/answers',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(answerRows)});
+      await request('/rest/v1/attempts?id=eq.'+encodeURIComponent(activeAttemptId),{
+        method:'PATCH',headers:{Prefer:'return=minimal'},
+        body:JSON.stringify({score:score400,total_questions:total,submitted_at:new Date().toISOString()})
+      });
+    }catch(e){console.warn('Result saving:',e.message);}
+  }
+
+  const label=autoSubmitted?'Time is up — your CBT was submitted automatically.':'CBT submitted successfully.';
+  document.getElementById('examHost').innerHTML=`<div class="exam-shell exam-result">
+    <div style="font-size:42px">🎉</div>
+    <h2>${escapeHtml(activeExam.title)}</h2>
+    <p>${label}</p>
+    <div class="score-big">${score400}/400</div>
+    <p><b>${scorePercent}%</b> · ${correct} correct · ${total-correct} incorrect · ${earnedPoints}/${totalPoints} points earned</p>
+    <div class="result-actions">
+      <button type="button" class="start-cbt" onclick="returnToCbts()">Back to My CBTs</button>
+    </div>
+  </div>`;
+  activeExam=null;activeAttemptId=null;
+}
+
+function returnToCbts(){
+  document.getElementById('examHost').innerHTML=`<div class="exam-shell">
+    <div class="exam-head"><div><h2>CBT Examination</h2><p>Select a published CBT to begin.</p></div></div>
+  </div>`;
+  document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+  const btn=document.querySelector('.nav button[data-section="cbts"]');
+  if(btn){btn.classList.add('active');}
+  document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+  document.getElementById('cbts').classList.add('active');
+  document.getElementById('pageTitle').textContent='My CBTs';
+  loadAvailableCbts();
+}
+</script>
+
+</body></html>
